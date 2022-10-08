@@ -1,41 +1,47 @@
 import re
 
+ID_ATTRIBUTE = "Id"
 POST_TYPE_ID_ATTRIBUTE = "PostTypeId"
+CREATION_DATE_ATTRIBUTE = "CreationDate"
 BODY_ATTRIBUTE = "Body"
 
-def trancateWhitespace(line):
-	line = re.sub("\s+", " ", line)
-	return line
+whitespaceRules = [
+	{ "subFrom": "\s+", "subTo": " " }
+]
 
-def removeHTMLTags(line):
-	line = re.sub("<.*?>", "", line)
-	return line
+removeHTMLTagRules = [
+	{ "subFrom": "<.*?>", "subTo": "" }
+]
 
-def removeUnneededCharRef(line):
-	line = re.sub("&#xA;", " ", line)
-	line = re.sub("&#xD;", " ", line)
-	return line
+removeUnneededCharRefRules = [
+	{ "subFrom": "&#xA;", "subTo": " " },
+	{ "subFrom": "&#xD;", "subTo": " " }
+]
 
-def convertCharRefToOriginalForm(line):
-	line = re.sub("&amp;", "&", line)
-	line = re.sub("&quot;", "\"", line)
-	line = re.sub("&apos;", "'", line)
-	line = re.sub("&gt;", ">", line)
-	line = re.sub("&lt;", "<", line)
+characterRefToOriginalFormRules = [
+	{ "subFrom": "&amp;", "subTo": "&" },
+	{ "subFrom": "&quot;", "subTo": "\"" },
+	{ "subFrom": "&apos;", "subTo": "'" },
+	{ "subFrom": "&gt;", "subTo": ">" },
+	{ "subFrom": "&lt;", "subTo": "<" },
+]
+
+def applyRulesOnLine(rules, line):
+	for rule in rules:
+		line = re.sub(rule["subFrom"], rule["subTo"], line)
 	return line
 
 def preprocessLine(inputLine):
-	bodyValueSearchResult = re.search(f'{BODY_ATTRIBUTE}=\"(.*?)\"', inputLine)
-	preprocessedLine = bodyValueSearchResult.group(1)
-	preprocessedLine = convertCharRefToOriginalForm(preprocessedLine)
-	preprocessedLine = removeUnneededCharRef(preprocessedLine)
-	preprocessedLine = removeHTMLTags(preprocessedLine)
-	preprocessedLine = trancateWhitespace(preprocessedLine)
+	preprocessedLine = getValueByAttribute(BODY_ATTRIBUTE, inputLine)
+	preprocessedLine = applyRulesOnLine(characterRefToOriginalFormRules, preprocessedLine)
+	preprocessedLine = applyRulesOnLine(removeUnneededCharRefRules, preprocessedLine)
+	preprocessedLine = applyRulesOnLine(removeHTMLTagRules, preprocessedLine)
+	preprocessedLine = applyRulesOnLine(whitespaceRules, preprocessedLine)
 	return preprocessedLine
 
-def getPostTypeId(inputLine):
-	postTypeIdSearchResult = re.search(f'{POST_TYPE_ID_ATTRIBUTE}=\"(.*?)\"', inputLine)
-	return postTypeIdSearchResult.group(1)
+def getValueByAttribute(attribute, inputLine):
+	result = re.search(f'{attribute}=\"(.*?)\"', inputLine)
+	return result.group(1)
 
 def writeLineToFile(outputFile, line):
 	with open(outputFile, 'a', encoding='utf-8') as fileToWrite:
@@ -51,14 +57,14 @@ def splitFile(inputFile, outputFile_question, outputFile_answer):
 	file = open(inputFile, 'r')
 
 	for line in file:
-		if (POST_TYPE_ID_ATTRIBUTE not in line or BODY_ATTRIBUTE not in line):
+		if (POST_TYPE_ID_ATTRIBUTE.value not in line or BODY_ATTRIBUTE.value not in line):
 			continue
 		
 		preprocessedLine = preprocessLine(line)
 		if (preprocessedLine == ""):
 			continue
 
-		postTypeId = getPostTypeId(line)
+		postTypeId = getValueByAttribute(POST_TYPE_ID_ATTRIBUTE, line)
 		if (postTypeId == "1"):
 			writeLineToFile(outputFile_question, preprocessedLine)
 		if (postTypeId == "2"):
