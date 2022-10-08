@@ -57,7 +57,7 @@ def splitFile(inputFile, outputFile_question, outputFile_answer):
 	file = open(inputFile, 'r')
 
 	for line in file:
-		if (POST_TYPE_ID_ATTRIBUTE.value not in line or BODY_ATTRIBUTE.value not in line):
+		if (POST_TYPE_ID_ATTRIBUTE not in line or BODY_ATTRIBUTE not in line):
 			continue
 		
 		preprocessedLine = preprocessLine(line)

@@ -1,5 +1,4 @@
 import re, math
-from venv import create
 from preprocessData_studentID import preprocessLine, getValueByAttribute, ID_ATTRIBUTE, CREATION_DATE_ATTRIBUTE, POST_TYPE_ID_ATTRIBUTE
 
 QUESTION_POST_TYPE = "question"
@@ -43,15 +42,13 @@ class Parser:
 	def getVocabularySize(self):
 		# [^\d.\d] 2.4 will become 24
 		words = re.sub(r'[^\w\s]', '', self.cleanBody).lower().split(' ')
-		wordsCounter = dict()
-
+		wordsSet = set()
 		for word in words:
-			if word in wordsCounter:
-				wordsCounter[word] += 1
-			else:
-				wordsCounter[word] = 1
-		return wordsCounter
+			wordsSet.add(word)
+		vocabularySize = len(wordsSet)
+		return vocabularySize
 
+# Just for test purpose, should remove after implementation
 if __name__ == "__main__":
 	testLine = '<row Id="1" PostTypeId="1" CreationDate="2015-09-09T16:39:07.963" Body="&lt;p&gt;My second to last laptop was a Core2Duo 2.4 GHz processor. I have recently purchased a new laptop, which has 2.5 GHz i7 processors (the new model Macbook Pro).&lt;/p&gt;&#xA;&#xA;&lt;p&gt;It it fairly obvious that a 5-year newer processor is faster. &lt;/p&gt;&#xA;&#xA;&lt;p&gt;My assumption is the processor speed has something to do with actual calculations per second, but obviously the &quot;GHz&quot; comparison is meaningless as a comparison when not comparing the same model of processor.&lt;/p&gt;&#xA;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;How can I reliably or meaningfully determine the differences in performance from two processors of different models? &lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;" />'
 	parser = Parser(testLine)
