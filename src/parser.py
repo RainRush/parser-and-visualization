@@ -1,5 +1,5 @@
+from preprocessData import preprocessLine, getValueByAttribute, ID_ATTRIBUTE, CREATION_DATE_ATTRIBUTE, POST_TYPE_ID_ATTRIBUTE
 import re, math
-from preprocessData_studentID import preprocessLine, getValueByAttribute, ID_ATTRIBUTE, CREATION_DATE_ATTRIBUTE, POST_TYPE_ID_ATTRIBUTE
 
 QUESTION_POST_TYPE = "question"
 ANSWER_POST_TYPE = "answer"

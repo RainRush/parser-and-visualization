@@ -1,6 +1,6 @@
-from parser_studentID import Parser
+from preprocessData import POST_TYPE_ID_ATTRIBUTE, BODY_ATTRIBUTE, ID_ATTRIBUTE, CREATION_DATE_ATTRIBUTE
+from parser import Parser
 import matplotlib.pyplot as plt
-from preprocessData_studentID import POST_TYPE_ID_ATTRIBUTE, BODY_ATTRIBUTE, ID_ATTRIBUTE, CREATION_DATE_ATTRIBUTE
 import math
 
 def incrementCounterByKey(counter, key):
